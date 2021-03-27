@@ -1,0 +1,50 @@
+{
+	"name": "navbar-dropdown-v1",
+	"version": "0.1.0",
+	"private": true,
+	"dependencies": {
+		"@ant-design/icons": "^4.5.0",
+		"@babel/runtime": "^7.13.10",
+		"@stripe/react-stripe-js": "^1.4.0",
+		"@stripe/stripe-js": "^1.13.1",
+		"@testing-library/jest-dom": "^4.2.4",
+		"@testing-library/react": "^9.3.2",
+		"@testing-library/user-event": "^7.1.2",
+		"antd": "^4.13.1",
+		"axios": "^0.21.1",
+		"classnames": "^2.2.6",
+		"react": "^16.13.1",
+		"react-dom": "^16.13.1",
+		"react-router-dom": "^5.2.0",
+		"react-scripts": "3.4.1",
+		"react-star-ratings": "^2.3.0"
+	},
+	"scripts": {
+		"start": "npm run watch:css && react-scripts start",
+		"build": "npm run watch:css && react-scripts build",
+		"test": "react-scripts test",
+		"eject": "react-scripts eject",
+		"watch:css": "postcss src/assets/tailwind.css -o src/assets/main.css"
+	},
+	"eslintConfig": {
+		"extends": "react-app"
+	},
+	"browserslist": {
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version"
+		]
+	},
+	"devDependencies": {
+		"autoprefixer": "^10.2.5",
+		"postcss": "^8.2.8",
+		"postcss-cli": "^8.3.1",
+		"tailwindcss": "^2.0.3"
+	}
+}

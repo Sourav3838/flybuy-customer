@@ -1,0 +1,2 @@
+to install tailwind classes:- https://www.smashingmagazine.com/2020/02/tailwindcss-react-project/
+to resolve error from above:- https://tailwindcss.com/docs/installation#post-css-7-compatibility-build
