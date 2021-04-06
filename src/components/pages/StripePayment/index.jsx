@@ -93,7 +93,7 @@ const ResetButton = ({ onClick }) => (
 	</button>
 );
 
-const CheckoutForm = ({ total }) => {
+const CheckoutForm = ({ total, setFinalClientSecret }) => {
 	const stripe = useStripe();
 	const elements = useElements();
 	const [error, setError] = useState(null);
@@ -115,8 +115,9 @@ const CheckoutForm = ({ total }) => {
 				setClientSecret(response?.data?.clientSecret);
 			}
 		};
-
-		getClientSecret();
+		if (total > 0) {
+			getClientSecret();
+		}
 	}, [total]);
 
 	const handleSubmit = async (event) => {
@@ -141,6 +142,7 @@ const CheckoutForm = ({ total }) => {
 			const response = await axios.get(`/mail/send`);
 			if (response) {
 				console.log(`response`, response);
+				setFinalClientSecret(clientSecret);
 			}
 		}
 		// const payload = await stripe.createPaymentMethod({
@@ -263,11 +265,11 @@ const stripePromise = loadStripe(
 	'pk_test_51IRvCrFB1lDZnUf7OFQ9zIlyOijw9Mukqtb48Oudnh6FIoygUi4UGPmeU5dp10oysin7lY0kJvW4406rs1dYYtmW00FBN5QM55'
 );
 
-const App = ({ total }) => {
+const App = ({ total, setFinalClientSecret }) => {
 	return (
 		<div className="AppWrapper mx-auto" style={{ marginTop: '10rem' }}>
 			<Elements stripe={stripePromise} options={ELEMENTS_OPTIONS} total={total}>
-				<CheckoutForm total={total} />
+				<CheckoutForm total={total} setFinalClientSecret={setFinalClientSecret} />
 			</Elements>
 		</div>
 	);

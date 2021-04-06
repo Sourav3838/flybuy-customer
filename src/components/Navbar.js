@@ -3,11 +3,15 @@ import React, { useState, useEffect } from 'react';
 import { Button } from './Button';
 import { Avatar, Menu, Dropdown, Drawer, notification, Badge, Form, Input } from 'antd';
 import { ShoppingTwoTone } from '@ant-design/icons';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useParams } from 'react-router-dom';
 import axios from '../axios';
 import './Navbar.css';
 
 function Navbar({ currentUser, setCurrentUser, cartValue, setCartValue }) {
+	var user = JSON.parse(localStorage.getItem('user'));
+	console.log(user);
+
+	const { userId } = useParams();
 	const [click, setClick] = useState(false);
 	const [button, setButton] = useState(true);
 	const [visible, setVisible] = useState(false);
@@ -15,7 +19,8 @@ function Navbar({ currentUser, setCurrentUser, cartValue, setCartValue }) {
 	let history = useHistory();
 	async function logoutUser() {
 		console.log(`currentUser[0]`, currentUser);
-		const req = await axios.post('/user/logout', currentUser[0]);
+		const req = await axios.post('/user/logout', JSON.parse(localStorage.getItem('user')));
+
 		if (req) {
 			setCurrentUser('');
 			notification.open({
@@ -34,7 +39,7 @@ function Navbar({ currentUser, setCurrentUser, cartValue, setCartValue }) {
 		}
 	}
 	useEffect(() => {
-		if (currentUser && currentUser[0]?._id) getCartProducts(currentUser[0]?._id);
+		getCartProducts(JSON.parse(localStorage.getItem('user'))?._id);
 	}, [currentUser]);
 	const menu = (
 		<Menu>
@@ -87,19 +92,27 @@ function Navbar({ currentUser, setCurrentUser, cartValue, setCartValue }) {
 						</li>
 						{currentUser && (
 							<>
-								{/* <li className="nav-item">
-									<Link to="/services" className="nav-links" onClick={closeMobileMenu}>
-										Services
-									</Link>
-								</li> */}
 								<li className="nav-item">
-									<Link to="/products" className="nav-links" onClick={closeMobileMenu}>
+									<Link
+										to={`/order/user/${JSON.parse(localStorage.getItem('user'))?._id}`}
+										className="nav-links"
+										onClick={closeMobileMenu}
+									>
+										Orders
+									</Link>
+								</li>
+								<li className="nav-item">
+									<Link
+										to={`/products/${JSON.parse(localStorage.getItem('user'))?._id}`}
+										className="nav-links"
+										onClick={closeMobileMenu}
+									>
 										Products
 									</Link>
 								</li>
 								<li className="nav-item">
 									<Link
-										to={`/user/${currentUser[0]?._id}/cart`}
+										to={`/user/${JSON.parse(localStorage.getItem('user'))?._id}/cart`}
 										className="nav-links"
 										onClick={closeMobileMenu}
 									>
@@ -128,8 +141,8 @@ function Navbar({ currentUser, setCurrentUser, cartValue, setCartValue }) {
 										}}
 									>
 										<span className="capitalize">
-											{currentUser[0]?.first_name?.charAt(0)}{' '}
-											{currentUser[0]?.last_name?.charAt(0)}
+											{JSON.parse(localStorage.getItem('user'))?.first_name?.charAt(0)}{' '}
+											{JSON.parse(localStorage.getItem('user'))?.last_name?.charAt(0)}
 										</span>
 									</Avatar>
 								</Dropdown>

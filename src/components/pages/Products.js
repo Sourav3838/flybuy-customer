@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Avatar, Row, Col, Tooltip, Tag, message, Carousel } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { EyeOutlined, StarTwoTone, ShoppingTwoTone } from '@ant-design/icons';
 import axios from '../../axios';
 import '../../App.css';
 
 const Products = ({ currentUser, setCurrentUser, setCartValue }) => {
 	const [productList, setProductList] = useState([]);
+	const { userId } = useParams();
 	const { Meta } = Card;
 	useEffect(() => {
 		async function checkExistingUser() {
-			const res = await axios.get('/user/current');
-			if (res?.statusText === 'OK') {
-				setCurrentUser(res?.data);
+			const res = await axios.get(`/user/current/${userId}`);
+			console.log(`res`, res);
+			if (res?.status === 201) {
+				localStorage.setItem('user', JSON.stringify(res?.data[0]));
+				setCurrentUser(JSON.parse(localStorage.getItem('user')));
 			}
 		}
 		checkExistingUser();
@@ -27,16 +30,18 @@ const Products = ({ currentUser, setCurrentUser, setCartValue }) => {
 		}
 	}
 	async function getCartProducts() {
+		console.log(`called`);
 		console.log(`cart product`);
 		console.log(`currentUser[0]?._id`, currentUser[0]?._id);
-		const response = await axios.get(`/user/${currentUser[0]?._id}/cart`);
+		const response = await axios.get(`/user/${JSON.parse(localStorage.getItem('user'))?._id}/cart`);
 		if (response) {
+			console.log(`setting cart value`);
 			setCartValue(response?.data?.length);
 		}
 	}
 	async function addToCart(id) {
 		console.log(`get cart`);
-		const res = await axios.post(`/product/${id}/add/cart`, currentUser[0]);
+		const res = await axios.post(`/product/${id}/add/cart`, JSON.parse(localStorage.getItem('user')));
 		if (res) {
 			if (res?.data?._id) {
 				message.success('Product added to cart successfully');
@@ -48,7 +53,7 @@ const Products = ({ currentUser, setCurrentUser, setCartValue }) => {
 		}
 	}
 	useEffect(() => {
-		if (currentUser) getProducts();
+		getProducts();
 	}, [currentUser]);
 	console.log(`currentUser`, currentUser);
 	return (

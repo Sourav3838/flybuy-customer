@@ -34,6 +34,7 @@ const ViewProducts = ({ setCartValue, currentUser }) => {
 		console.log(`currentUser[0]?._id`, currentUser[0]?._id);
 		const response = await axios.get(`/user/${currentUser[0]?._id}/cart`);
 		if (response) {
+			console.log(`setting cart value`);
 			setCartValue(response?.data?.length);
 		}
 	}
@@ -45,7 +46,7 @@ const ViewProducts = ({ setCartValue, currentUser }) => {
 				message.success('Product added to cart successfully');
 				getCartProducts();
 			}
-			console.log(`res`, res);
+			console.log(`res from get cart`, res);
 		}
 	}
 	return (

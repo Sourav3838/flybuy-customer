@@ -37,7 +37,8 @@ const Login = () => {
 
 										async function checkExistingUser() {
 											await axios.post('/user/find', values).then((res) => {
-												console.log('res', res);
+												console.log('res from login', res);
+
 												if (res?.data?.length === 0) {
 													console.log(`no data`);
 													notification.open({
@@ -46,7 +47,7 @@ const Login = () => {
 															'User with this username does not exist , please sign up.',
 													});
 												} else {
-													history.push('/products');
+													history.push(`/products/${res?.data[0]?._id}`);
 												}
 											});
 										}
