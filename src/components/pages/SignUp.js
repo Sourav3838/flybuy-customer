@@ -1,14 +1,29 @@
 /* eslint-disable no-unused-expressions */
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Row, Col, Form, Input, Button, notification, Card } from 'antd';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import '../../App.css';
 import axios from '../../axios';
 import Logo from '../../images/circle-cropped.png';
 
 const SignUp = () => {
+	const fetchQueryParams = () => {
+		const queryArray = search.split('?')[1].split('&');
+		let queryParams = {};
+		for (let i = 0; i < queryArray.length; i++) {
+			const [key, val] = queryArray[i].split('=');
+			queryParams[key] = val ? val : true;
+		}
+		return queryParams;
+	};
+	const [queryParams, setQueryParams] = useState();
 	let history = useHistory();
+	let { search } = useLocation();
 	const [form] = Form.useForm();
+
+	useEffect(() => {
+		setQueryParams(fetchQueryParams(search));
+	}, []);
 
 	console.log(window.location);
 	return (
@@ -34,6 +49,7 @@ const SignUp = () => {
 									form={form}
 									onFinish={(values) => {
 										console.log('values', values);
+
 										async function checkExistingUser() {
 											const req = await axios.post('/user/login', values);
 											if (req) {
@@ -47,8 +63,17 @@ const SignUp = () => {
 												}
 											}
 										}
-										checkExistingUser();
 
+										if (!queryParams) {
+											checkExistingUser();
+										} else {
+											const data = values;
+											data.role = queryParams?.role;
+											data.plan = queryParams?.plan;
+											data.price = queryParams?.price;
+											console.log(`1`, data);
+											checkExistingUser();
+										}
 										form?.resetFields();
 									}}
 								>

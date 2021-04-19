@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Avatar, Row, Col, Tooltip, Tag, message, Carousel } from 'antd';
-import { Link, useParams } from 'react-router-dom';
-import { EyeOutlined, StarTwoTone, ShoppingTwoTone } from '@ant-design/icons';
+import { Card, Avatar, Row, Col, Tooltip, Tag, message, Carousel, Button, Result, Space, Table } from 'antd';
+import { Link, useParams, useHistory } from 'react-router-dom';
+import { EyeOutlined, StarTwoTone, ShoppingTwoTone, PlusCircleOutlined, EyeTwoTone } from '@ant-design/icons';
 import axios from '../../axios';
 import '../../App.css';
 
 const Products = ({ currentUser, setCurrentUser, setCartValue }) => {
 	const [productList, setProductList] = useState([]);
-	const { userId } = useParams();
+	const [productRetailerList, setProductRetailerList] = useState([]);
+	const { userId, retailerId } = useParams();
 	const { Meta } = Card;
+	const history = useHistory();
+	console.log(`productRetailerList`, productRetailerList);
 	useEffect(() => {
 		async function checkExistingUser() {
 			const res = await axios.get(`/user/current/${userId}`);
@@ -52,13 +55,82 @@ const Products = ({ currentUser, setCurrentUser, setCartValue }) => {
 			console.log(`res while adding product to cart`, res);
 		}
 	}
+
+	async function getRetailerProducts() {
+		const req = await axios.get(`/product/all/retailer/${userId}`);
+		if (req) {
+			console.log(`req retailer data`, req);
+			setProductRetailerList(req?.data);
+		}
+	}
+
 	useEffect(() => {
-		getProducts();
+		if (currentUser?.role !== 'retailer') getProducts();
+		else getRetailerProducts();
 	}, [currentUser]);
 	console.log(`currentUser`, currentUser);
+	const columns = [
+		{
+			title: 'Product Name',
+			dataIndex: 'product_name',
+			render: (text, record) => <div className="underline text-blue-400">{text}</div>,
+		},
+		{
+			title: 'Price',
+			dataIndex: 'product_price',
+			render: (text) => <div>$ {text}</div>,
+		},
+		{
+			title: 'Rating',
+			dataIndex: 'product_rating',
+			render: (text) => <div> {text}</div>,
+		},
+		{
+			title: 'Status',
+			dataIndex: 'status',
+			render: (text) => <div> {text}</div>,
+		},
+		{
+			title: 'Category',
+			dataIndex: 'product_category',
+			render: (category) => (
+				<div className="w-full flex">
+					{category.map((item) => {
+						let color = item.length === 5 ? 'geekblue' : 'green';
+						if (item === 'Children') {
+							color = 'volcano';
+						}
+						if (item === 'Home Accessories') {
+							color = 'Yellow';
+						}
+						return (
+							<Tag color={color} key={item}>
+								{item.toUpperCase()}
+							</Tag>
+						);
+					})}
+				</div>
+			),
+		},
+		{
+			key: 'action',
+			align: 'right',
+			render: (text, record) => (
+				<Space size="middle">
+					<div
+						className="text-blue-400 cursor-pointer"
+						onClick={() => history.replace(`/product/${record._id}`)}
+					>
+						<EyeTwoTone /> View
+					</div>
+				</Space>
+			),
+		},
+	];
+
 	return (
 		<div className="bg-white shadow rounded-lg p-6">
-			{productList?.length > 0 && (
+			{currentUser?.role !== 'retailer' && productList?.length > 0 ? (
 				<Row gutter={[24, 24]}>
 					{productList?.map((item) => (
 						<Col xl={8} lg={10} md={12} sm={24} xs={24}>
@@ -177,6 +249,38 @@ const Products = ({ currentUser, setCurrentUser, setCartValue }) => {
 						</Col>
 					))}
 				</Row>
+			) : (
+				<>
+					{productRetailerList?.length < 1 ? (
+						<Result
+							status="404"
+							title="404"
+							subTitle="Sorry, there are no products to display."
+							extra={
+								<Link to={`/products/add/${userId}`}>
+									<Button type="primary">
+										Add Products <PlusCircleOutlined />
+									</Button>
+								</Link>
+							}
+						/>
+					) : (
+						<div className=" mt-12 shadow rounded-lg p-4">
+							<Table
+								onRow={(record, rowIndex) => {
+									return {
+										onClick: () => {
+											console.log('record', record);
+										}, // click row
+									};
+								}}
+								scroll={{ x: 400, y: 300 }}
+								columns={columns}
+								dataSource={productRetailerList}
+							/>
+						</div>
+					)}
+				</>
 			)}
 		</div>
 	);

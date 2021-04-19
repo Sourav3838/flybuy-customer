@@ -90,7 +90,7 @@ function Navbar({ currentUser, setCurrentUser, cartValue, setCartValue }) {
 								Home
 							</Link>
 						</li>
-						{currentUser && (
+						{currentUser && currentUser?.role !== 'retailer' && (
 							<>
 								<li className="nav-item">
 									<Link
@@ -119,6 +119,29 @@ function Navbar({ currentUser, setCurrentUser, cartValue, setCartValue }) {
 										<Badge count={cartValue}>
 											<ShoppingTwoTone className="text-4xl" twoToneColor="#fff" />
 										</Badge>
+									</Link>
+								</li>
+							</>
+						)}
+						{currentUser && currentUser?.role === 'retailer' && (
+							<>
+								<li className="nav-item">
+									<Link
+										to={`/products/${JSON.parse(localStorage.getItem('user'))?._id}`}
+										className="nav-links"
+										onClick={closeMobileMenu}
+									>
+										Total Orders
+									</Link>
+								</li>
+
+								<li className="nav-item">
+									<Link
+										to={`/products/add/${JSON.parse(localStorage.getItem('user'))?._id}`}
+										className="nav-links"
+										onClick={closeMobileMenu}
+									>
+										Add Products
 									</Link>
 								</li>
 							</>

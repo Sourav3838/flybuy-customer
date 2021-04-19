@@ -11,6 +11,8 @@ import LogIn from './components/pages/Login';
 import OrderHistory from './components/pages/OrderHistory';
 import ViewProduct from './components/pages/ViewProduct';
 import ViewOrder from './components/pages/ViewOrder';
+import RetailerSubscription from './components/pages/RetailerSubscription';
+import RetailerProducts from './components/pages/RetailerProducts';
 
 function App() {
 	const [currentUser, setCurrentUser] = useState();
@@ -28,7 +30,9 @@ function App() {
 				<Switch>
 					<Route path="/" exact component={Home} />
 					<Route path="/services" component={Services} />
+					<Route exact path={`/products/add/:retailerId`} component={RetailerProducts} />
 					<Route
+						exact
 						path="/products/:userId"
 						// component={Products}
 						render={(props) => (
@@ -41,6 +45,7 @@ function App() {
 						)}
 					/>
 					<Route
+						exact
 						path="/product/:productId"
 						render={(props) => (
 							<ViewProduct
@@ -71,6 +76,7 @@ function App() {
 							<ViewOrder currentUser={currentUser} setCurrentUser={setCurrentUser} {...props} />
 						)}
 					/>
+					<Route exact path={`/retailer-subscription`} component={RetailerSubscription} />
 				</Switch>
 			</Router>
 		</>

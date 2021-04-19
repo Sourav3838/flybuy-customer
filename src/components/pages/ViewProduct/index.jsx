@@ -1,6 +1,21 @@
 /* eslint-disable no-unused-expressions */
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Button, Divider, Card, Tabs, Tag, message, Image } from 'antd';
+import {
+	Row,
+	Col,
+	Button,
+	Divider,
+	Card,
+	Tabs,
+	Tag,
+	message,
+	Image,
+	Input,
+	Rate,
+	notification,
+	List,
+	Comment,
+} from 'antd';
 import { useParams, useHistory } from 'react-router-dom';
 import '../../../App.css';
 import axios from '../../../axios';
@@ -9,22 +24,36 @@ import StarRatings from 'react-star-ratings';
 
 const ViewProducts = ({ setCartValue, currentUser }) => {
 	const { Meta } = Card;
+	const desc = ['terrible', 'bad', 'normal', 'good', 'wonderful'];
 	let history = useHistory();
 	const [productData, setProductData] = useState();
 	const [previewImage, setPreviewImage] = useState('');
+	const [rating, setRating] = useState(3);
+	const [comments, setComments] = useState('');
+	const [productComments, setProductComments] = useState();
+	const [totalValue, setTotalValue] = useState();
 
 	const { TabPane } = Tabs;
 	const { productId } = useParams();
 	console.log(`productData`, productData);
+
+	async function getAllComments() {
+		const req = await axios.get(`/comments/all/product/${productId}`);
+		if (req) {
+			console.log('req from deployed database', req);
+			setProductComments(req?.data);
+		}
+	}
 	async function getProductData() {
 		const req = await axios.get(`/product/${productId}`);
 		if (req) {
 			console.log(`data of particular product`, req?.data);
 			setPreviewImage(req?.data[0]?.ImageURLOne?.url);
 			setProductData(req?.data[0]);
+			getAllComments();
 		}
 	}
-
+	console.log(`productComments`, productComments);
 	useEffect(() => {
 		getProductData();
 	}, [productId]);
@@ -49,6 +78,40 @@ const ViewProducts = ({ setCartValue, currentUser }) => {
 			console.log(`res from get cart`, res);
 		}
 	}
+
+	async function addComment(values) {
+		const req = await axios.post('/comment/add', values);
+		if (req) {
+			console.log('req from deployed database', req);
+			if (req?.statusText === 'Created') {
+				notification.open({
+					message: 'Great Job!',
+					description: `New comment has been added successfuly`,
+				});
+				getAllComments();
+			}
+		}
+	}
+
+	async function handleCommentSubmit() {
+		const data = {
+			prodId: productId,
+			userId: currentUser?._id,
+			userInitials: currentUser?.first_name?.charAt(0) + currentUser?.last_name?.charAt(0),
+			rating: rating,
+			comments: comments,
+		};
+		addComment(data);
+	}
+
+	useEffect(() => {
+		if (productComments) {
+			const totalRating = productComments.reduce(function (total, array) {
+				return total + parseInt(array?.rating);
+			}, 0);
+			setTotalValue(totalRating / productComments?.length);
+		}
+	}, [productComments]);
 	return (
 		<>
 			<div>
@@ -63,17 +126,19 @@ const ViewProducts = ({ setCartValue, currentUser }) => {
 									}}
 								>
 									<div className="font-bold text-lg">{productData?.product_name}</div>
-									<div>
-										<Button
-											type="primary"
-											onClick={() => {
-												console.log(`productData`, productData);
-												addToCart(productData?._id);
-											}}
-										>
-											<CheckCircleFilled /> Add To Cart
-										</Button>
-									</div>
+									{currentUser?.role !== 'retailer' && (
+										<div>
+											<Button
+												type="primary"
+												onClick={() => {
+													console.log(`productData`, productData);
+													addToCart(productData?._id);
+												}}
+											>
+												<CheckCircleFilled /> Add To Cart
+											</Button>
+										</div>
+									)}
 								</div>
 
 								<div className="my-6 shadow rounded-lg">
@@ -139,7 +204,7 @@ const ViewProducts = ({ setCartValue, currentUser }) => {
 														<h3>Rating</h3>
 														<div className="font-semibold">
 															<StarRatings
-																rating={parseInt(productData?.product_rating)}
+																rating={parseInt(totalValue || 0)}
 																starRatedColor="yellow"
 																numberOfStars={5}
 																name="rating"
@@ -166,6 +231,55 @@ const ViewProducts = ({ setCartValue, currentUser }) => {
 													</div>
 												</Col>
 											</Row>
+
+											<div className="bg-gray-100 rounded shadow p-4 w-full">
+												<span className="mr-4">Add Rating:-</span>
+												<Rate
+													tooltips={desc}
+													onChange={(value) => {
+														console.log(`value`, value);
+														setRating(value);
+													}}
+													value={rating}
+												/>
+												{rating ? (
+													<span className="ant-rate-text">{desc[rating - 1]}</span>
+												) : (
+													''
+												)}
+
+												<Input.TextArea
+													style={{ width: '100%' }}
+													autoSize={{ minRows: 3, maxRows: 5 }}
+													onChange={(e) => {
+														setComments(e.target.value);
+													}}
+												/>
+												<div className="flex justify-end">
+													<Button type="primary" onClick={handleCommentSubmit}>
+														Add Comment
+													</Button>
+												</div>
+											</div>
+											{productComments?.length > 0 && (
+												<div className="my-4">
+													<List
+														className="comment-list"
+														header={`${productComments.length} replies`}
+														itemLayout="horizontal"
+														dataSource={productComments}
+														renderItem={(item) => (
+															<li>
+																<Comment
+																	author={item.userInitials}
+																	avatar="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+																	content={item.comments}
+																/>
+															</li>
+														)}
+													/>
+												</div>
+											)}
 										</>
 									)}
 								</div>
