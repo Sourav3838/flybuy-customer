@@ -13,6 +13,7 @@ import ViewProduct from './components/pages/ViewProduct';
 import ViewOrder from './components/pages/ViewOrder';
 import RetailerSubscription from './components/pages/RetailerSubscription';
 import RetailerProducts from './components/pages/RetailerProducts';
+import Chat from './components/pages/Chat';
 
 function App() {
 	const [currentUser, setCurrentUser] = useState();
@@ -58,6 +59,7 @@ function App() {
 					/>
 					<Route path="/sign-up" component={SignUp} />
 					<Route path="/log-in" component={LogIn} />
+					<Route path="/chatbot/:userId" component={Chat} />
 					<Route
 						path={`/user/:userId/cart`}
 						render={(props) => (

@@ -85,11 +85,6 @@ function Navbar({ currentUser, setCurrentUser, cartValue, setCartValue }) {
 						<i className={click ? 'fas fa-times' : 'fas fa-bars'} />
 					</div>
 					<ul className={click ? 'nav-menu active' : 'nav-menu'}>
-						<li className="nav-item">
-							<Link to="/" className="nav-links" onClick={closeMobileMenu}>
-								Home
-							</Link>
-						</li>
 						{currentUser && currentUser?.role !== 'retailer' && (
 							<>
 								<li className="nav-item">
@@ -108,6 +103,15 @@ function Navbar({ currentUser, setCurrentUser, cartValue, setCartValue }) {
 										onClick={closeMobileMenu}
 									>
 										Products
+									</Link>
+								</li>
+								<li className="nav-item">
+									<Link
+										to={`/chatbot/${JSON.parse(localStorage.getItem('user'))?._id}`}
+										className="nav-links"
+										onClick={closeMobileMenu}
+									>
+										Query
 									</Link>
 								</li>
 								<li className="nav-item">

@@ -230,37 +230,39 @@ const ViewProducts = ({ setCartValue, currentUser }) => {
 															})}
 													</div>
 												</Col>
+												{currentUser?.role !== 'retailer' && (
+													<div className="bg-gray-100 rounded shadow p-4 w-full">
+														<span className="mr-4">Add Rating:-</span>
+														<Rate
+															tooltips={desc}
+															onChange={(value) => {
+																console.log(`value`, value);
+																setRating(value);
+															}}
+															value={rating}
+														/>
+														{rating ? (
+															<span className="ant-rate-text">{desc[rating - 1]}</span>
+														) : (
+															''
+														)}
+
+														<Input.TextArea
+															style={{ width: '100%' }}
+															autoSize={{ minRows: 3, maxRows: 5 }}
+															onChange={(e) => {
+																setComments(e.target.value);
+															}}
+														/>
+														<div className="flex justify-end">
+															<Button type="primary" onClick={handleCommentSubmit}>
+																Add Comment
+															</Button>
+														</div>
+													</div>
+												)}{' '}
 											</Row>
 
-											<div className="bg-gray-100 rounded shadow p-4 w-full">
-												<span className="mr-4">Add Rating:-</span>
-												<Rate
-													tooltips={desc}
-													onChange={(value) => {
-														console.log(`value`, value);
-														setRating(value);
-													}}
-													value={rating}
-												/>
-												{rating ? (
-													<span className="ant-rate-text">{desc[rating - 1]}</span>
-												) : (
-													''
-												)}
-
-												<Input.TextArea
-													style={{ width: '100%' }}
-													autoSize={{ minRows: 3, maxRows: 5 }}
-													onChange={(e) => {
-														setComments(e.target.value);
-													}}
-												/>
-												<div className="flex justify-end">
-													<Button type="primary" onClick={handleCommentSubmit}>
-														Add Comment
-													</Button>
-												</div>
-											</div>
 											{productComments?.length > 0 && (
 												<div className="my-4">
 													<List
