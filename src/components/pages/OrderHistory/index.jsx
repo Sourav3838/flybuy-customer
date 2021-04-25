@@ -68,30 +68,20 @@ const AllOrders = () => {
 	];
 
 	return (
-		<>
-			<div>
-				<Row gutter={[24, 12]} className="px-12">
-					<Col span={4} />
-					<Col xl={18} lg={18} md={18} sm={24} xs={24}>
-						<div className=" mt-12 shadow rounded-lg p-4">
-							<Table
-								onRow={(record, rowIndex) => {
-									return {
-										onClick: () => {
-											console.log('record', record);
-										}, // click row
-									};
-								}}
-								scroll={{ x: 400, y: 300 }}
-								columns={columns}
-								dataSource={orderList}
-							/>
-						</div>
-					</Col>
-					<Col span={2} />
-				</Row>
-			</div>
-		</>
+		<div className=" mt-12 shadow rounded-lg p-4">
+			<Table
+				onRow={(record, rowIndex) => {
+					return {
+						onClick: () => {
+							console.log('record', record);
+						}, // click row
+					};
+				}}
+				scroll={{ x: 400, y: 300 }}
+				columns={columns}
+				dataSource={orderList}
+			/>
+		</div>
 	);
 };
 

@@ -5,6 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { CardElement, Elements, useElements, useStripe } from '@stripe/react-stripe-js';
+import classNames from 'classnames';
 import './styles.css';
 import axios from '../../../axios';
 
@@ -57,17 +58,20 @@ const Field = ({ label, id, type, placeholder, required, autoComplete, value, on
 );
 
 const SubmitButton = ({ processing, error, children, disabled }) => (
-	<button
-		className={`SubmitButton ${error ? 'SubmitButton--error' : ''}`}
-		type="submit"
-		disabled={processing || disabled}
-	>
-		{processing ? 'Processing...' : children}
-	</button>
+	<div className={classNames('flex justify-center ', error ? 'mt-8' : 'mt-2')}>
+		<button
+			className={`SubmitButton ${error ? 'SubmitButton--error' : ''}`}
+			type="submit"
+			style={{ width: '34.5vw' }}
+			disabled={processing || disabled}
+		>
+			{processing ? 'Processing...' : children}
+		</button>
+	</div>
 );
 
 const ErrorMessage = ({ children }) => (
-	<div className="ErrorMessage" role="alert">
+	<div className="ErrorMessage " role="alert">
 		<svg width="16" height="16" viewBox="0 0 17 17">
 			<path
 				fill="#FFF"
@@ -93,7 +97,7 @@ const ResetButton = ({ onClick }) => (
 	</button>
 );
 
-const CheckoutForm = ({ total, setFinalClientSecret }) => {
+const CheckoutForm = ({ total, setFinalClientSecret, offersLength }) => {
 	const stripe = useStripe();
 	const elements = useElements();
 	const [error, setError] = useState(null);
@@ -109,7 +113,9 @@ const CheckoutForm = ({ total, setFinalClientSecret }) => {
 
 	useEffect(() => {
 		const getClientSecret = async () => {
-			const response = await axios.post(`/payment/create?total=${total * 100}`);
+			const response = await axios.post(
+				`/payment/create?total=${(offersLength > 0 ? total : total * 0.75) * 100}`
+			);
 			if (response) {
 				console.log(`response`, response);
 				setClientSecret(response?.data?.clientSecret);
@@ -244,9 +250,18 @@ const CheckoutForm = ({ total, setFinalClientSecret }) => {
 				/>
 			</fieldset>
 			{error && <ErrorMessage>{error.message}</ErrorMessage>}
-			<SubmitButton processing={processing} error={error} disabled={!stripe}>
-				Pay INR {total}
-			</SubmitButton>
+			{!error && offersLength === 0 && (
+				<div className="text-green-700 font-semibold text-md flex justify-center">
+					After discount from <span className="text-bold mx-1"> {total}</span> to{' '}
+					<span className="font-bold mx-1">{total * 0.75}</span>
+				</div>
+			)}
+
+			<div className="mt-2 mx-2">
+				<SubmitButton processing={processing} error={error} disabled={!stripe}>
+					Pay INR {offersLength === 0 ? total * 0.75 : total}
+				</SubmitButton>
+			</div>
 		</form>
 	);
 };
@@ -265,11 +280,11 @@ const stripePromise = loadStripe(
 	'pk_test_51IRvCrFB1lDZnUf7OFQ9zIlyOijw9Mukqtb48Oudnh6FIoygUi4UGPmeU5dp10oysin7lY0kJvW4406rs1dYYtmW00FBN5QM55'
 );
 
-const App = ({ total, setFinalClientSecret }) => {
+const App = ({ total, setFinalClientSecret, offersLength }) => {
 	return (
-		<div className="AppWrapper mx-auto" style={{ marginTop: '10rem' }}>
+		<div className="AppWrapper mx-auto">
 			<Elements stripe={stripePromise} options={ELEMENTS_OPTIONS} total={total}>
-				<CheckoutForm total={total} setFinalClientSecret={setFinalClientSecret} />
+				<CheckoutForm total={total} setFinalClientSecret={setFinalClientSecret} offersLength={offersLength} />
 			</Elements>
 		</div>
 	);

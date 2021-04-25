@@ -17,6 +17,7 @@ import {
 	Select,
 	InputNumber,
 	Steps,
+	Skeleton,
 } from 'antd';
 
 import { useParams, useHistory } from 'react-router-dom';
@@ -29,12 +30,15 @@ import { CheckCircleFilled, CloseCircleOutlined } from '@ant-design/icons';
 const ViewProducts = () => {
 	const { Step } = Steps;
 	const { Meta } = Card;
+	const { TextArea } = Input;
 	let history = useHistory();
 	const { Panel } = Collapse;
 	const [form] = Form.useForm();
 	const [formLocation] = Form.useForm();
 	const [orderData, setOrderData] = useState();
 	const [action, setAction] = useState('');
+	const [loading, setLoading] = useState(false);
+	const [userComment, setUserComment] = useState('');
 	const [actionModel, setActionModel] = useState(false);
 	useEffect(() => {
 		if (orderData) {
@@ -49,11 +53,13 @@ const ViewProducts = () => {
 	const { orderId } = useParams();
 	console.log(`orderData`, orderData);
 	async function getOrderData() {
+		setLoading(true);
 		const req = await axios.get(`/order/${orderId}`);
 		if (req) {
 			console.log(`data of particular order`, req?.data);
 
 			setOrderData(req?.data[0]);
+			setLoading(false);
 		}
 	}
 
@@ -62,7 +68,14 @@ const ViewProducts = () => {
 			history.replace('/orders/all');
 		}, 3000);
 	};
-
+	async function addUserComment() {
+		const req = await axios.put(`/order/${orderId}/user/comment`, { userComment: userComment });
+		if (req) {
+			console.log(`review`, req?.data);
+			message.success('Thank you, for the review. Hope you like our product!');
+			getOrderData();
+		}
+	}
 	async function updateOrder(data) {
 		const req = await axios.put(`/order/${orderId}/update`, data);
 		if (req) {
@@ -136,7 +149,7 @@ const ViewProducts = () => {
 	};
 
 	return (
-		<>
+		<Skeleton loading={loading}>
 			<div className="bg-gray-100">
 				<Row gutter={[24, 12]} className="px-12">
 					<Col xl={24} lg={24} md={24} sm={24} xs={24}>
@@ -148,7 +161,7 @@ const ViewProducts = () => {
 										boxShadow: '10px 14px 18px #00ff66',
 									}}
 								>
-									<div className="font-bold text-lg">#{orderData?._id}</div>
+									<div className="font-bold text-lg w-full">#{orderData?._id}</div>
 									<div className="flex">
 										<div className="w-full flex">
 											<Tag color="volcano" key={orderData?.status}>
@@ -180,10 +193,11 @@ const ViewProducts = () => {
 											<Col xl={8} lg={8} md={8} sm={24} xs={24}>
 												<Card
 													className="m-3 p-12"
-													style={{ width: 300 }}
+													style={{ width: 300, boxShadow: '10px 14px 18px #00ff66' }}
 													hoverable
 													cover={
 														<img
+															style={{ width: 300, height: 300 }}
 															alt="example"
 															src={item?.product?.ImageURLOne?.secure_url}
 														/>
@@ -197,56 +211,83 @@ const ViewProducts = () => {
 								</div>
 
 								{orderData?.status === 'APPROVED' && (
-									<Row gutter={[24, 12]}>
-										<Col xl={6} lg={6} md={6} sm={24} xs={24}>
-											<div className="ml-4">
-												<Steps
-													current={getCurrentDeliveryState()}
-													percent={parseInt(orderData?.category_success_rate)}
-													direction="vertical"
-												>
-													<Step
-														title="Ready"
-														description={
-															orderData?.category === 'Approved'
-																? orderData?.category_comment
-																: ''
-														}
+									<>
+										<Row gutter={[24, 12]}>
+											<Col xl={6} lg={6} md={6} sm={24} xs={24}>
+												<div className="ml-4">
+													<Steps
+														current={getCurrentDeliveryState()}
+														percent={parseInt(orderData?.category_success_rate)}
+														direction="vertical"
+													>
+														<Step
+															title="Ready"
+															description={
+																orderData?.category === 'Approved'
+																	? orderData?.category_comment
+																	: ''
+															}
+														/>
+														<Step
+															title="Dispatched"
+															description={
+																orderData?.category === 'Dispatched'
+																	? orderData?.category_comment
+																	: ''
+															}
+														/>
+														<Step
+															title="Delivered"
+															description={
+																orderData?.category === 'Delivered'
+																	? orderData?.category_comment
+																	: ''
+															}
+														/>
+													</Steps>
+												</div>
+											</Col>
+											<Col xl={18} lg={18} md={18} sm={24} xs={24}>
+												<GoogleMap
+													longitude={orderData?.longitude}
+													latitude={orderData?.latitude}
+													isMarkerShown={true}
+												/>
+											</Col>
+										</Row>
+										{orderData?.category_success_rate === '100' &&
+											orderData?.category === 'Delivered' && (
+												<div className="mt-4 bg-white rounded shadow p-4">
+													<div className="font-bold text-lg">Add Review</div>
+													<TextArea
+														defaultValue={orderData?.user_comment || ''}
+														showCount
+														maxLength={500}
+														onChange={(e) => {
+															setUserComment(e.target.value);
+														}}
 													/>
-													<Step
-														title="Dispatched"
-														description={
-															orderData?.category === 'Dispatched'
-																? orderData?.category_comment
-																: ''
-														}
-													/>
-													<Step
-														title="Delivered"
-														description={
-															orderData?.category === 'Delivered'
-																? orderData?.category_comment
-																: ''
-														}
-													/>
-												</Steps>
-											</div>
-										</Col>
-										<Col xl={18} lg={18} md={18} sm={24} xs={24}>
-											<GoogleMap
-												longitude={orderData?.longitude}
-												latitude={orderData?.latitude}
-												isMarkerShown={true}
-											/>
-										</Col>
-									</Row>
+													<div className="mt-2">
+														<Button
+															disabled={orderData?.user_comment}
+															type="primary"
+															onClick={() => {
+																addUserComment();
+															}}
+														>
+															Save
+														</Button>
+													</div>
+												</div>
+											)}
+									</>
 								)}
 							</>
 						)}
 					</Col>
 				</Row>
 			</div>
-		</>
+		</Skeleton>
 	);
 };
 

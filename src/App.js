@@ -14,10 +14,12 @@ import ViewOrder from './components/pages/ViewOrder';
 import RetailerSubscription from './components/pages/RetailerSubscription';
 import RetailerProducts from './components/pages/RetailerProducts';
 import Chat from './components/pages/Chat';
+import WishList from './components/pages/WishList';
 
 function App() {
 	const [currentUser, setCurrentUser] = useState();
 	const [cartValue, setCartValue] = useState(0);
+	const [wishlistValue, setWishlistValue] = useState(0);
 
 	return (
 		<>
@@ -27,6 +29,8 @@ function App() {
 					setCurrentUser={setCurrentUser}
 					setCartValue={setCartValue}
 					cartValue={cartValue}
+					setWishlistValue={setWishlistValue}
+					wishlistValue={wishlistValue}
 				/>
 				<Switch>
 					<Route path="/" exact component={Home} />
@@ -41,6 +45,7 @@ function App() {
 								currentUser={currentUser}
 								setCurrentUser={setCurrentUser}
 								setCartValue={setCartValue}
+								setWishlistValue={setWishlistValue}
 								{...props}
 							/>
 						)}
@@ -63,7 +68,24 @@ function App() {
 					<Route
 						path={`/user/:userId/cart`}
 						render={(props) => (
-							<Cart currentUser={currentUser} setCurrentUser={setCurrentUser} {...props} />
+							<Cart
+								currentUser={currentUser}
+								setCurrentUser={setCurrentUser}
+								setCartValue={setCartValue}
+								{...props}
+							/>
+						)}
+					/>
+					<Route
+						path={`/user/:userId/wishlist`}
+						render={(props) => (
+							<WishList
+								currentUser={currentUser}
+								setCurrentUser={setCurrentUser}
+								setWishlistValue={setWishlistValue}
+								setCartValue={setCartValue}
+								{...props}
+							/>
 						)}
 					/>
 					<Route

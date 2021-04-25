@@ -55,8 +55,8 @@ export default function Upload({ setImageURL }) {
 		}
 	};
 	return (
-		<div>
-			<h1 className="title">Upload an Image</h1>
+		<div className="mb-2">
+			<div className="title">Upload an Image</div>
 			<form onSubmit={handleSubmitFile} className="form">
 				<div className="flex space-between">
 					<input

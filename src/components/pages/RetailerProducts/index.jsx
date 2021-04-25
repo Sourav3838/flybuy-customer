@@ -81,8 +81,8 @@ const RetailerProducts = () => {
 										}
 									}}
 								>
+									<div className="">Product Name</div>
 									<Form.Item
-										label={<span className="">Product Name</span>}
 										name="product_name"
 										rules={[
 											{
@@ -94,9 +94,9 @@ const RetailerProducts = () => {
 										<Input placeholder="Enter product name" size={'large'} />
 									</Form.Item>
 									<Row gutter={[24, 12]}>
-										<Col xl={12} lg={12} md={12} sm={24} xs={24}>
+										<Col xl={24} lg={24} md={24} sm={24} xs={24}>
+											<div className="">Product Price</div>
 											<Form.Item
-												label={<span className="">Product Price</span>}
 												name="product_price"
 												rules={[
 													{
@@ -113,31 +113,15 @@ const RetailerProducts = () => {
 													style={{ width: '100%' }}
 													size={'large'}
 													formatter={(value) =>
-														`$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+														` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 													}
 													parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
 												/>
 											</Form.Item>
 										</Col>
-										<Col xl={12} lg={12} md={12} sm={24} xs={24}>
-											<Form.Item
-												label={<span className="">Product Rating</span>}
-												name="product_rating"
-											>
-												<InputNumber
-													min="0"
-													max="5"
-													step="1"
-													stringMode
-													style={{ width: '100%' }}
-													size={'large'}
-													parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
-												/>
-											</Form.Item>
-										</Col>
 									</Row>
+									<div className="">Product Category</div>
 									<Form.Item
-										label={<span className="">Product Category</span>}
 										name="product_category"
 										rules={[
 											{
@@ -167,8 +151,8 @@ const RetailerProducts = () => {
 											</Option>
 										</Select>
 									</Form.Item>
+									<div className="">Product Description</div>
 									<Form.Item
-										label={<span className="">Product Description</span>}
 										name="product_description"
 										rules={[
 											{
@@ -189,9 +173,16 @@ const RetailerProducts = () => {
 									<UploadImages setImageURL={setImageURLFour} />
 									<UploadImages setImageURL={setImageURLFive} />
 									<Form.Item>
-										<Button type="primary" className="mt-4 flex" onClick={() => form?.submit()}>
-											Add Product
-										</Button>
+										<div className="mt-4">
+											<Button
+												type="primary"
+												block
+												className=" flex"
+												onClick={() => form?.submit()}
+											>
+												Add Product
+											</Button>
+										</div>
 									</Form.Item>
 								</Form>
 							</Card>

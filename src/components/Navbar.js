@@ -2,12 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from './Button';
 import { Avatar, Menu, Dropdown, Drawer, notification, Badge, Form, Input } from 'antd';
-import { ShoppingTwoTone } from '@ant-design/icons';
+import { HeartTwoTone, ShoppingTwoTone } from '@ant-design/icons';
 import { Link, useHistory, useParams } from 'react-router-dom';
 import axios from '../axios';
 import './Navbar.css';
 
-function Navbar({ currentUser, setCurrentUser, cartValue, setCartValue }) {
+function Navbar({ currentUser, setCurrentUser, cartValue, setCartValue, wishlistValue, setWishlistValue }) {
 	var user = JSON.parse(localStorage.getItem('user'));
 	console.log(user);
 
@@ -38,8 +38,23 @@ function Navbar({ currentUser, setCurrentUser, cartValue, setCartValue }) {
 			setCartValue(response?.data?.length);
 		}
 	}
+	async function getWishlistProducts(id) {
+		console.log(`wishlist product`);
+		console.log(`currentUser[0]?._id`, id);
+		const response = await axios.get(`/user/${id}/wishlist`);
+		if (response) {
+			setWishlistValue(response?.data?.length);
+		}
+	}
 	useEffect(() => {
+		form?.setFieldsValue({
+			first_name: JSON.parse(localStorage.getItem('user'))?.first_name,
+			last_name: JSON.parse(localStorage.getItem('user'))?.last_name,
+			username: JSON.parse(localStorage.getItem('user'))?.username,
+		});
+
 		getCartProducts(JSON.parse(localStorage.getItem('user'))?._id);
+		getWishlistProducts(JSON.parse(localStorage.getItem('user'))?._id);
 	}, [currentUser]);
 	const menu = (
 		<Menu>
@@ -84,6 +99,7 @@ function Navbar({ currentUser, setCurrentUser, cartValue, setCartValue }) {
 					<div className="menu-icon" onClick={handleClick}>
 						<i className={click ? 'fas fa-times' : 'fas fa-bars'} />
 					</div>
+
 					<ul className={click ? 'nav-menu active' : 'nav-menu'}>
 						{currentUser && currentUser?.role !== 'retailer' && (
 							<>
@@ -114,14 +130,26 @@ function Navbar({ currentUser, setCurrentUser, cartValue, setCartValue }) {
 										Query
 									</Link>
 								</li>
+
 								<li className="nav-item">
 									<Link
 										to={`/user/${JSON.parse(localStorage.getItem('user'))?._id}/cart`}
 										className="nav-links"
 										onClick={closeMobileMenu}
 									>
-										<Badge count={cartValue}>
-											<ShoppingTwoTone className="text-4xl" twoToneColor="#fff" />
+										<Badge count={cartValue || 0}>
+											<ShoppingTwoTone className="text-4xl" twoToneColor="limegreen" />
+										</Badge>
+									</Link>
+								</li>
+								<li className="nav-item">
+									<Link
+										to={`/user/${JSON.parse(localStorage.getItem('user'))?._id}/wishlist`}
+										className="nav-links"
+										onClick={closeMobileMenu}
+									>
+										<Badge count={wishlistValue}>
+											<HeartTwoTone className="text-4xl" twoToneColor="red" />
 										</Badge>
 									</Link>
 								</li>
@@ -157,6 +185,7 @@ function Navbar({ currentUser, setCurrentUser, cartValue, setCartValue }) {
 							</Link>
 						</li>
 					</ul>
+
 					{button && (
 						<>
 							{currentUser ? (

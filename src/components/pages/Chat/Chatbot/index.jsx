@@ -14,6 +14,8 @@ function Chatbot() {
 
 	useEffect(() => {
 		dispatch(clearMessage(''));
+		var msg = new SpeechSynthesisUtterance('hello, how can i help');
+		window.speechSynthesis.speak(msg);
 		eventQuery('flybuy-chat-bot');
 	}, [userId]);
 
@@ -73,10 +75,7 @@ function Chatbot() {
 			//I will send request to the textQuery ROUTE
 
 			const response = await axios.post(`/api/dialogflow/eventQuery/${userId}`, eventQueryVariables);
-			if (response) {
-				var msg = new SpeechSynthesisUtterance('hello, how can i help');
-				window.speechSynthesis.speak(msg);
-			}
+
 			for (let content of response.data.fulfillmentMessages) {
 				let conversation = {
 					who: 'bot',

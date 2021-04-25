@@ -22,7 +22,13 @@ const RetailerSubscription = () => {
 						<li>And more...</li>
 					</ul>
 					<Link to={`/sign-up?role=retailer&plan=premium&price=1200`}>
-						<button>Sign up</button>
+						<div className="mx-auto mb-6">
+							<div className="flex justify-center mb-4">
+								<div className=" w-24 px-6 py-2 cursor-pointer border-gray-100 rounded-full bg-blue-500 text-gray-900">
+									Sign up
+								</div>
+							</div>
+						</div>
 					</Link>
 				</div>
 				<div className="promo scale">
@@ -37,7 +43,11 @@ const RetailerSubscription = () => {
 						<li>And more...</li>
 					</ul>
 					<Link to={`/sign-up?role=retailer&plan=plus&price=800`}>
-						<button>Sign up</button>
+						<div className="flex justify-center mb-4">
+							<div className=" w-24 px-6 py-2 cursor-pointer border-gray-100 rounded-full bg-blue-500 text-gray-900">
+								Sign up
+							</div>
+						</div>
 					</Link>
 				</div>
 				<div className="promo">
@@ -52,7 +62,11 @@ const RetailerSubscription = () => {
 						<li>And more...</li>
 					</ul>
 					<Link to={`/sign-up?role=retailer&plan=basic&price=500`}>
-						<button>Sign up</button>
+						<div className="flex justify-center mb-4">
+							<div className=" w-24 px-6 py-2 cursor-pointer border-gray-100 rounded-full bg-blue-500 text-gray-900">
+								Sign up
+							</div>
+						</div>
 					</Link>
 				</div>
 			</div>

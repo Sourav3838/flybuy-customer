@@ -90,7 +90,6 @@ object {
 	}
 }
 
-
 /* width */
 ::-webkit-scrollbar {
 	width: 20px;
@@ -111,4 +110,31 @@ object {
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
 	background: #00ff66;
+}
+
+.ant-input-group-addon,
+.ant-input-group-wrap {
+	vertical-align: baseline;
+}
+.ant-input-group-addon {
+	display: none !important;
+}
+
+.ant-pagination-prev .ant-pagination-item-link,
+.ant-pagination-next .ant-pagination-item-link {
+	width: fit-content;
+	height: fit-content;
+	padding: 0.5rem;
+	border-radius: 15px;
+}
+
+li {
+	display: block;
+	margin: 0px 0 0 0;
+}
+.ant-table-pagination.ant-pagination {
+	margin: 16px 0 0 0px;
+}
+button {
+	margin: -9px 0px 0px 4px !important;
 }
