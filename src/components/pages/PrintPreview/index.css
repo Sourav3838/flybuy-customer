@@ -1,0 +1,27 @@
+.headingLeftBorder {
+	top: 83px;
+	left: 0px;
+	width: 490px;
+	height: 32px;
+	background: #1b5db4 0% 0% no-repeat padding-box;
+	opacity: 1;
+}
+.headingRightBorder {
+	top: 83px;
+	left: 527px;
+	width: 140px;
+	height: 32px;
+	background: #1b5db4 0% 0% no-repeat padding-box;
+	opacity: 1;
+}
+
+.headingCenterText {
+	top: 78px;
+	left: 339px;
+	width: 176px;
+	height: 40px;
+	text-align: center;
+	letter-spacing: 0.16px;
+	color: #282d36;
+	opacity: 1;
+}

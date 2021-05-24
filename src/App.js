@@ -15,6 +15,7 @@ import RetailerSubscription from './components/pages/RetailerSubscription';
 import RetailerProducts from './components/pages/RetailerProducts';
 import Chat from './components/pages/Chat';
 import WishList from './components/pages/WishList';
+import PrintMonitoringForm from './components/pages/PrintMonitoringForm';
 
 function App() {
 	const [currentUser, setCurrentUser] = useState();
@@ -101,6 +102,7 @@ function App() {
 						)}
 					/>
 					<Route exact path={`/retailer-subscription`} component={RetailerSubscription} />
+					<Route exact path={`/user/:userId/order/:orderId/invoice`} component={PrintMonitoringForm} />
 				</Switch>
 			</Router>
 		</>

@@ -22,7 +22,7 @@ const SignUp = () => {
 	const [form] = Form.useForm();
 
 	useEffect(() => {
-		setQueryParams(fetchQueryParams(search));
+		if (search.includes('?')) setQueryParams(fetchQueryParams(search));
 	}, []);
 
 	console.log(window.location);
@@ -125,7 +125,7 @@ const SignUp = () => {
 											},
 										]}
 									>
-										<Input.Password placeholder="Enter your passowrd" />
+										<Input.Password placeholder="Enter your password" />
 									</Form.Item>
 
 									<Form.Item>

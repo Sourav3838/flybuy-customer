@@ -138,3 +138,16 @@ li {
 button {
 	margin: -9px 0px 0px 4px !important;
 }
+.ant-comment-content {
+	flex: none !important;
+}
+.ant-comment-content-author-name > * {
+	font-size: 0.9rem;
+	color: black;
+}
+textarea.ant-input {
+	margin-bottom: 1rem;
+}
+.ant-result {
+	padding: 30px;
+}

@@ -36,7 +36,9 @@ const Login = () => {
 										console.log('values', values);
 
 										async function checkExistingUser() {
+											console.log(`1`, 1);
 											await axios.post('/user/find', values).then((res) => {
+												console.log(`2`, 2);
 												console.log('res from login', res);
 
 												if (res?.data?.length === 0) {

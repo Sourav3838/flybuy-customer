@@ -20,7 +20,7 @@ import {
 	Skeleton,
 } from 'antd';
 
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useHistory, Link } from 'react-router-dom';
 import '../../../App';
 import axios from '../../../axios';
 import axiosAPI from 'axios';
@@ -50,7 +50,7 @@ const ViewProducts = () => {
 			});
 		}
 	}, [orderData]);
-	const { orderId } = useParams();
+	const { orderId, userId } = useParams();
 	console.log(`orderData`, orderData);
 	async function getOrderData() {
 		setLoading(true);
@@ -164,6 +164,14 @@ const ViewProducts = () => {
 									<div className="font-bold text-lg w-full">#{orderData?._id}</div>
 									<div className="flex">
 										<div className="w-full flex">
+											<div className="mx-4">
+												<Link to={`/user/${userId}/order/${orderId}/invoice`}>
+													<Button className="mx-2" type="primary">
+														Invoice
+													</Button>
+												</Link>
+											</div>
+
 											<Tag color="volcano" key={orderData?.status}>
 												{orderData?.status || 'NONE'}
 											</Tag>

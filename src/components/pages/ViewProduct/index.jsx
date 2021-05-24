@@ -141,10 +141,10 @@ const ViewProducts = ({ setCartValue, currentUser }) => {
 									)}
 								</div>
 
-								<div className="my-6 shadow rounded-lg">
+								<div className="my-6">
 									{productData && (
 										<>
-											<Row gutter={[24, 12]}>
+											<Row gutter={[24, 12]} className="bg-white">
 												<Col xl={8} lg={8} md={8} sm={24} xs={24}>
 													<div
 														style={{
@@ -230,41 +230,47 @@ const ViewProducts = ({ setCartValue, currentUser }) => {
 															})}
 													</div>
 												</Col>
-												{currentUser?.role !== 'retailer' && (
-													<div className="bg-gray-100 rounded shadow p-4 w-full">
-														<span className="mr-4">Add Rating:-</span>
-														<Rate
-															tooltips={desc}
-															onChange={(value) => {
-																console.log(`value`, value);
-																setRating(value);
-															}}
-															value={rating}
-														/>
-														{rating ? (
-															<span className="ant-rate-text">{desc[rating - 1]}</span>
-														) : (
-															''
-														)}
-
-														<Input.TextArea
-															style={{ width: '100%' }}
-															autoSize={{ minRows: 3, maxRows: 5 }}
-															onChange={(e) => {
-																setComments(e.target.value);
-															}}
-														/>
-														<div className="flex justify-end">
-															<Button type="primary" onClick={handleCommentSubmit}>
-																Add Comment
-															</Button>
-														</div>
-													</div>
-												)}{' '}
 											</Row>
+											{currentUser?.role !== 'retailer' && (
+												<div className="bg-white rounded shadow p-4 w-full mt-8">
+													<span className="mr-4">Add Rating:-</span>
+													<Rate
+														tooltips={desc}
+														onChange={(value) => {
+															console.log(`value`, value);
+															setRating(value);
+														}}
+														value={rating}
+													/>
+													{rating ? (
+														<span className="ant-rate-text">{desc[rating - 1]}</span>
+													) : (
+														''
+													)}
 
+													<Input.TextArea
+														style={{ width: '100%' }}
+														autoSize={{ minRows: 3, maxRows: 5 }}
+														onChange={(e) => {
+															setComments(e.target.value);
+														}}
+													/>
+													<div className="flex justify-end">
+														<Button type="primary" onClick={handleCommentSubmit}>
+															Add Comment
+														</Button>
+													</div>
+												</div>
+											)}{' '}
 											{productComments?.length > 0 && (
-												<div className="my-4">
+												<div
+													className="my-6 bg-white px-4 rounded shadow"
+													style={{
+														flex: 'none !impotant',
+														maxHeight: '400px',
+														margin: 'auto',
+													}}
+												>
 													<List
 														className="comment-list"
 														header={`${productComments.length} replies`}
@@ -273,9 +279,13 @@ const ViewProducts = ({ setCartValue, currentUser }) => {
 														renderItem={(item) => (
 															<li>
 																<Comment
-																	author={item.userInitials}
+																	author={
+																		<div className="text-gray-900">
+																			{item?.userInitials?.toUpperCase()}
+																		</div>
+																	}
 																	avatar="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-																	content={item.comments}
+																	content={item?.comments}
 																/>
 															</li>
 														)}

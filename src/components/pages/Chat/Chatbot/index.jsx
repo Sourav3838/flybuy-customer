@@ -3,12 +3,13 @@ import axios from '../../../../axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { saveMessage, clearMessage } from '../../../../_actions/message_actions';
 import Message from './Sections/Message';
-import { List, Avatar } from 'antd';
+import { List, Avatar, notification } from 'antd';
 import Card from './Sections/Card';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { CommentOutlined, RobotOutlined } from '@ant-design/icons';
 function Chatbot() {
 	const { userId } = useParams();
+	const history = useHistory();
 	const dispatch = useDispatch();
 	const messagesFromRedux = useSelector((state) => state.message.messages);
 
@@ -51,6 +52,15 @@ function Chatbot() {
 				window.speechSynthesis.speak(msg);
 
 				dispatch(saveMessage(conversation));
+				setTimeout(() => {
+					if (response.status === 200 && content.text.text[0].includes('Thank you')) {
+						notification.open({
+							message: 'Query is saved successfully',
+							description: `Please wait for the response, admin will get back to you soon`,
+						});
+						history.push(`/products/${userId}`);
+					}
+				}, 8000);
 			}
 		} catch (error) {
 			conversation = {

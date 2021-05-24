@@ -27,7 +27,6 @@ html {
 }
 .AppWrapper {
 	width: 500px;
-	height: 400px;
 	position: relative;
 }
 @keyframes fade {

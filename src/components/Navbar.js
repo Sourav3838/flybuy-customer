@@ -1,20 +1,24 @@
 /* eslint-disable no-unused-expressions */
 import React, { useState, useEffect } from 'react';
 import { Button } from './Button';
-import { Avatar, Menu, Dropdown, Drawer, notification, Badge, Form, Input } from 'antd';
-import { HeartTwoTone, ShoppingTwoTone } from '@ant-design/icons';
-import { Link, useHistory, useParams } from 'react-router-dom';
+import { Avatar, Menu, Dropdown, Drawer, notification, Badge, Form, Input, Popover, Divider, Modal } from 'antd';
+import { BellFilled, HeartTwoTone, ShoppingTwoTone } from '@ant-design/icons';
+import { Link, useHistory } from 'react-router-dom';
 import axios from '../axios';
+import classNames from 'classnames';
 import './Navbar.css';
 
 function Navbar({ currentUser, setCurrentUser, cartValue, setCartValue, wishlistValue, setWishlistValue }) {
 	var user = JSON.parse(localStorage.getItem('user'));
 	console.log(user);
 
-	const { userId } = useParams();
 	const [click, setClick] = useState(false);
 	const [button, setButton] = useState(true);
+	const [query, setQuery] = useState('');
 	const [visible, setVisible] = useState(false);
+	const [displayQueryModel, setDisplayQueryModel] = useState(false);
+	const [popUp, setPopUp] = useState(false);
+	const [displayQuery, setDisplayQuery] = useState('');
 	const [form] = Form?.useForm();
 	let history = useHistory();
 	async function logoutUser() {
@@ -30,6 +34,7 @@ function Navbar({ currentUser, setCurrentUser, cartValue, setCartValue, wishlist
 			history.push('/');
 		}
 	}
+
 	async function getCartProducts(id) {
 		console.log(`cart product`);
 		console.log(`currentUser[0]?._id`, id);
@@ -38,6 +43,14 @@ function Navbar({ currentUser, setCurrentUser, cartValue, setCartValue, wishlist
 			setCartValue(response?.data?.length);
 		}
 	}
+	async function fetchQueries() {
+		const response = await axios.get(`/user/${JSON.parse(localStorage.getItem('user'))?._id}/query`);
+		if (response) {
+			// console.log(`query response`, response);
+			setQuery(response?.data);
+		}
+	}
+	console.log(`query bjfnejfekjf3kl2j`, query);
 	async function getWishlistProducts(id) {
 		console.log(`wishlist product`);
 		console.log(`currentUser[0]?._id`, id);
@@ -56,6 +69,13 @@ function Navbar({ currentUser, setCurrentUser, cartValue, setCartValue, wishlist
 		getCartProducts(JSON.parse(localStorage.getItem('user'))?._id);
 		getWishlistProducts(JSON.parse(localStorage.getItem('user'))?._id);
 	}, [currentUser]);
+	useEffect(() => {
+		if (displayQuery?._id) {
+			form?.setFieldsValue({
+				query: displayQuery?.admin_comment || 'not responded yet',
+			});
+		}
+	}, [displayQuery]);
 	const menu = (
 		<Menu>
 			<Menu.Item
@@ -75,6 +95,37 @@ function Navbar({ currentUser, setCurrentUser, cartValue, setCartValue, wishlist
 	const onClose = () => {
 		setVisible(false);
 	};
+	const content = (
+		<div>
+			{query?.length > 0 &&
+				query?.map((item) => (
+					<>
+						<div
+							className="cursor-pointer"
+							onClick={() => {
+								setPopUp(false);
+								setDisplayQuery(item);
+								setDisplayQueryModel(true);
+							}}
+						>
+							<div className="font-bold">{item?.query?.fields?.query?.stringValue}</div>
+							<div className="flex">
+								<div className="bg-blue-500 rounded-full px-2 mr-2">Personal</div>
+								<div
+									className={classNames(
+										item?.status === 'Open' ? 'bg-yellow-500' : 'bg-green-500',
+										'rounded-full px-2'
+									)}
+								>
+									{item?.status}
+								</div>
+							</div>
+						</div>
+						<Divider />
+					</>
+				))}
+		</div>
+	);
 	const showButton = () => {
 		if (window.innerWidth <= 960) {
 			setButton(false);
@@ -85,6 +136,7 @@ function Navbar({ currentUser, setCurrentUser, cartValue, setCartValue, wishlist
 
 	useEffect(() => {
 		showButton();
+		fetchQueries();
 	}, []);
 
 	window.addEventListener('resize', showButton);
@@ -189,19 +241,45 @@ function Navbar({ currentUser, setCurrentUser, cartValue, setCartValue, wishlist
 					{button && (
 						<>
 							{currentUser ? (
-								<Dropdown overlay={menu}>
-									<Avatar
-										style={{
-											color: 'black',
-											backgroundColor: '#00ff66',
-										}}
+								<>
+									<Dropdown overlay={menu}>
+										<Avatar
+											style={{
+												color: 'black',
+												backgroundColor: '#00ff66',
+											}}
+										>
+											<span className="capitalize">
+												{JSON.parse(localStorage.getItem('user'))?.first_name?.charAt(0)}{' '}
+												{JSON.parse(localStorage.getItem('user'))?.last_name?.charAt(0)}
+											</span>
+										</Avatar>
+									</Dropdown>
+									<Popover
+										visible={popUp && !displayQueryModel}
+										placement="bottomLeft"
+										title="Queries"
+										content={content}
+										trigger="click"
 									>
-										<span className="capitalize">
-											{JSON.parse(localStorage.getItem('user'))?.first_name?.charAt(0)}{' '}
-											{JSON.parse(localStorage.getItem('user'))?.last_name?.charAt(0)}
-										</span>
-									</Avatar>
-								</Dropdown>
+										<div
+											className="relative flex  items-center "
+											onClick={() => {
+												setPopUp(!popUp);
+											}}
+										>
+											<div className="px-2 relative cursor-pointer ml-8">
+												<span className="border-2 border-white absolute right-2 top-0 flex items-center justify-center h-3 w-3 rounded-full bg-red-700 text-white text-xs font-medium -ml-6 mt-1 mr-3">
+													<span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 -ml-0 -mt-0" />
+													<span className="relative inline-flex rounded-full" />
+												</span>
+												<div className="flex rounded-full px-2 pt-2 pb-1 bg-gray-100 text-gray-900 items-center mr-2 ">
+													<BellFilled className="text-xl text-blue-900 " />
+												</div>
+											</div>
+										</div>
+									</Popover>
+								</>
 							) : (
 								<Link to="/log-in">
 									<Button buttonStyle="btn--outline">LOG IN/SIGN UP</Button>
@@ -297,6 +375,32 @@ function Navbar({ currentUser, setCurrentUser, cartValue, setCartValue, wishlist
 					</Form.Item>
 				</Form>
 			</Drawer>
+			<Modal
+				title="User Query"
+				visible={displayQueryModel}
+				onCancel={() => {
+					setDisplayQueryModel(false);
+				}}
+				footer={null}
+			>
+				<div className="font-bold">{displayQuery?.query?.fields?.query?.stringValue}</div>
+				<div className="flex mb-6">
+					<div className="bg-blue-500 rounded-full px-2 mr-2">Personal</div>
+					<div
+						className={classNames(
+							displayQuery?.status === 'Open' ? 'bg-yellow-500' : 'bg-green-500',
+							'rounded-full px-2'
+						)}
+					>
+						{displayQuery?.status}
+					</div>
+				</div>
+				<Form hideRequiredMark name="basic" form={form}>
+					<Form.Item name="query">
+						<Input placeholder="your query resolved by admin" disabled />
+					</Form.Item>
+				</Form>
+			</Modal>
 		</>
 	);
 }
